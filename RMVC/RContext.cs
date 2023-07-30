@@ -17,9 +17,9 @@ namespace RMVC {
         private RCommander _rCommander = null;
         private static bool _configured = false;
 
-        private static IRShell _shell = null;
-        private static IRPromoter _promoter = null;
-        private static Type _promoterType = null;
+        private static IRShell? _shell = null;
+        private static IRPromoter? _promoter = null;
+        private static Type? _promoterType = null;
 
 
         private static readonly Dictionary<BackgroundWorker, RCommandAsync> _processes =
@@ -29,7 +29,7 @@ namespace RMVC {
 
         private static readonly HashSet<Type> _pendingContexts = new HashSet<Type>();
 
-        public static void Configure(IRShell appShell, Type promoterType = null) {
+        public static void Configure(IRShell? appShell, Type? promoterType = null) {
             if (_configured)
             {
                 Error("RContext.Configure(...) should only be called once at the start of the application's life.");
@@ -39,17 +39,17 @@ namespace RMVC {
             _configured = true;
         }
 
-        protected static RContext GetContext(Type contextType) {
+        protected static RContext? GetContext(Type contextType) {
             if (!_contexts.ContainsKey(contextType)) {
-                Error("RContext instance not found: "+contextType.Name);
+                Error("RContext instance not found: " + contextType.Name + ".");
                 return null;
             }
             return _contexts[contextType];
         }
-        protected static IRShell GetShell() {
+        protected static IRShell? GetShell() {
             return _shell;
         }
-        protected static IRPromoter GetPromoter() {
+        protected static IRPromoter? GetPromoter() {
             return _promoter;
         }
 
@@ -120,7 +120,7 @@ namespace RMVC {
         }
         internal void ExecuteCommand(
             RCommandBase command
-            , RTracker rTracker
+            , RTracker? rTracker
             , double percentCap = 100d
         ) {
             percentCap = RHelper.ClampPercent(percentCap);
@@ -130,9 +130,9 @@ namespace RMVC {
             }
             // Async:
             else if (command is RCommandAsync) {
-                BackgroundWorker thread =null;
-                Thread debugThread = null;
-                RCommandAsync async = command as RCommandAsync;
+                BackgroundWorker? thread =null;
+                Thread? debugThread = null;
+                RCommandAsync? async = (RCommandAsync)command;
 
                 bool createNewThread = rTracker == null;
                 
@@ -162,12 +162,12 @@ namespace RMVC {
                     thread.RunWorkerAsync();
                 }
                 else {
-                    async.RunInternal(rTracker.CreateChild(async, percentCap));
+                    async.RunInternal(rTracker!.CreateChild(async, percentCap));
                 }
             }
         }// end ExecuteCommand()
         private static void OnThreadCompleted(object sender, RunWorkerCompletedEventArgs e) {
-            BackgroundWorker thread = sender as BackgroundWorker;
+            BackgroundWorker thread = (BackgroundWorker)sender;
             thread.RunWorkerCompleted -= OnThreadCompleted;
 
             RCommandAsync cmd = _processes[thread];
