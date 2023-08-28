@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace RMVC {
-    public abstract class RModel : RActor {
-        private RCommander _rCommander;
-        public RModel(RCommander rCommander) {
-            _rCommander = rCommander;
-        }
+    public abstract class RModel : RMediator {
+        public RModel(RCommander rCommander) : base(rCommander) {
 
-        protected void ExecuteCommand(RCommandBase command) {
-            _rCommander.Context.ExecuteCommand(command);
         }
     }
 }
