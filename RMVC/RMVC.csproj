@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC\Project\Assets\Plugins\RMVC.dll&quot;&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC2\RadioMC2\Assets\Plugins\RMVC.dll&quot;" />
+  </Target>
+
 </Project>
