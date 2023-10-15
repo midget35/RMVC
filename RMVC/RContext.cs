@@ -13,7 +13,7 @@ namespace RMVC {
         public static bool EnableTestMode = false;
         private static long PROGRESS_FLOOD_MS = 200;
 
-        private Stopwatch progressStopwatch;
+        //private Stopwatch progressStopwatch;
         private RCommander _rCommander = null;
         private static bool _configured = false;
 
@@ -97,8 +97,8 @@ namespace RMVC {
                 Fatal("Do not instantiate a Context directly. Use the static Initialise() method.");
             }
             _pendingContexts.Remove(GetType());
-            progressStopwatch = new Stopwatch();
-            progressStopwatch.Start();
+            //progressStopwatch = new Stopwatch();
+            //progressStopwatch.Start();
         }
 
         public abstract void SetProgressUpdate(RProgress[] progress);
