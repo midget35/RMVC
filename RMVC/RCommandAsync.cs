@@ -9,9 +9,9 @@ namespace RMVC {
 
         }
         protected abstract void Run();
-        protected abstract string GetTitle();
+        protected virtual string GetTitle() { return GetType().Name; }
 
-        internal RTracker rTracker { get; private set; }
+        internal RTracker? rTracker { get; private set; } = null;
         private bool completeHandled = false;
         internal bool hasParent { get; private set; } = false;
 

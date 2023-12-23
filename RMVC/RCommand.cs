@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RMVC {
     public abstract class RCommand : RCommandBase {
-        //internal RCommand() { }
+
         protected internal RContext context;
         protected abstract void Run();
 
