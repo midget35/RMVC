@@ -7,7 +7,15 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(ProjectDir)bin\$(Configuration)\netstandard2.1\$(TargetFileName)&quot; &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC\Project\Assets\Plugins\RMVC.dll&quot;&#xD;&#xA;copy &quot;$(ProjectDir)bin\$(Configuration)\netstandard2.1\$(TargetFileName)&quot; &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC2\RadioMC2\Assets\Plugins\RMVC.dll&quot;&#xD;&#xA;" />
+      <!-- Ensure the first target directory exists -->
+      <Exec Command="if not exist &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC\Project\Assets\Plugins&quot; mkdir &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC\Project\Assets\Plugins&quot;" />
+      <!-- Copy the file to the first target directory -->
+      <Exec Command="copy &quot;$(ProjectDir)bin\$(Configuration)\netstandard2.1\$(TargetFileName)&quot; &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC\Project\Assets\Plugins\RMVC.dll&quot;" />
+  
+      <!-- Ensure the second target directory exists -->
+      <Exec Command="if not exist &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC2\RadioMC2\Assets\Plugins&quot; mkdir &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC2\RadioMC2\Assets\Plugins&quot;" />
+      <!-- Copy the file to the second target directory -->
+      <Exec Command="copy &quot;$(ProjectDir)bin\$(Configuration)\netstandard2.1\$(TargetFileName)&quot; &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC2\RadioMC2\Assets\Plugins\RMVC.dll&quot;" />
   </Target>
 
 </Project>
