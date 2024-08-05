@@ -6,32 +6,36 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-<!--
+  <PropertyGroup>
+    <!-- Define the source file paths for both frameworks -->
+    <OutputPathNetStandard2_1>$(ProjectDir)bin\$(Configuration)\netstandard2.1\</OutputPathNetStandard2_1>
+    <TargetDir1>$(MSBuildThisFileDirectory)..\..\..\..\RADIO-Dev\RadioMC\Project\Assets\Plugins</TargetDir1>
+    <TargetDir2>$(MSBuildThisFileDirectory)..\..\..\..\RADIO-Dev\RadioMC2\RadioMC2\Assets\Plugins</TargetDir2>
+  </PropertyGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="if not exist &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC\Project\Assets\Plugins&quot; mkdir &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC\Project\Assets\Plugins&quot;" />
-      <Exec Command="copy &quot;$(ProjectDir)bin\$(Configuration)\netstandard2.1\$(TargetFileName)&quot; &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC\Project\Assets\Plugins\RMVC.dll&quot;" />
-  
-      <Exec Command="if not exist &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC2\RadioMC2\Assets\Plugins&quot; mkdir &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC2\RadioMC2\Assets\Plugins&quot;" />
-      <Exec Command="copy &quot;$(ProjectDir)bin\$(Configuration)\netstandard2.1\$(TargetFileName)&quot; &quot;..\..\..\..\..\..\RADIO-Dev\RadioMC2\RadioMC2\Assets\Plugins\RMVC.dll&quot;" />
+    <!-- Determine the source file path based on the target framework -->
+    <PropertyGroup>
+      <SourceFilePath Condition="'$(TargetFramework)' == 'netstandard2.1'">$(OutputPathNetStandard2_1)$(TargetFileName)</SourceFilePath>
+      <!-- For any netX.X framework (e.g., net5.0, net6.0, net7.0, net8.0, etc.) -->
+      <SourceFilePath Condition="'$(TargetFramework)' != 'netstandard2.1' and $(TargetFramework.StartsWith('net')) and $(TargetFramework.Length) > 3">$(ProjectDir)bin\$(Configuration)\$(TargetFramework)\$(TargetFileName)</SourceFilePath>
+    </PropertyGroup>
+
+    <!-- Debugging: Output the paths to ensure they are correct -->
+    <Message Importance="high" Text="TargetFramework: $(TargetFramework)" />
+    <Message Importance="high" Text="SourceFilePath: $(SourceFilePath)" />
+    <Message Importance="high" Text="TargetDir1: $(TargetDir1)" />
+    <Message Importance="high" Text="TargetDir2: $(TargetDir2)" />
+
+    <!-- Ensure the first target directory exists -->
+    <Exec Command="if not exist &quot;$(TargetDir1)&quot; mkdir &quot;$(TargetDir1)&quot;" />
+    <!-- Copy the file to the first target directory -->
+    <Exec Command="if exist &quot;$(SourceFilePath)&quot; copy &quot;$(SourceFilePath)&quot; &quot;$(TargetDir1)\RMVC.dll&quot;" />
+
+    <!-- Ensure the second target directory exists -->
+    <Exec Command="if not exist &quot;$(TargetDir2)&quot; mkdir &quot;$(TargetDir2)&quot;" />
+    <!-- Copy the file to the second target directory -->
+    <Exec Command="if exist &quot;$(SourceFilePath)&quot; copy &quot;$(SourceFilePath)&quot; &quot;$(TargetDir2)\RMVC.dll&quot;" />
   </Target>
--->
-<PropertyGroup>
-	<!-- Define the source file path -->
-	<SourceFilePath>$(ProjectDir)bin\$(Configuration)\netstandard2.1\$(TargetFileName)</SourceFilePath>
-	<!-- Define the target file directories -->
-	<TargetDir1>$(MSBuildThisFileDirectory)..\..\..\..\..\..\RADIO-Dev\RadioMC\Project\Assets\Plugins</TargetDir1>
-	<TargetDir2>$(MSBuildThisFileDirectory)..\..\..\..\..\..\RADIO-Dev\RadioMC2\RadioMC2\Assets\Plugins</TargetDir2>
-</PropertyGroup>
 
-<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	<!-- Ensure the first target directory exists -->
-	<Exec Command="if not exist &quot;$(TargetDir1)&quot; mkdir &quot;$(TargetDir1)&quot;" />
-	<!-- Copy the file to the first target directory -->
-	<Exec Command="copy &quot;$(SourceFilePath)&quot; &quot;$(TargetDir1)\RMVC.dll&quot;" Condition="Exists('$(TargetDir1)')" />
-
-	<!-- Ensure the second target directory exists -->
-	<Exec Command="if not exist &quot;$(TargetDir2)&quot; mkdir &quot;$(TargetDir2)&quot;" />
-	<!-- Copy the file to the second target directory -->
-	<Exec Command="copy &quot;$(SourceFilePath)&quot; &quot;$(TargetDir2)\RMVC.dll&quot;" Condition="Exists('$(TargetDir2)')" />
-</Target>
 </Project>
