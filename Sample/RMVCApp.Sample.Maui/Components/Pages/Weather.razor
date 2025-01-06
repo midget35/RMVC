@@ -1,0 +1,53 @@
+﻿@page "/weather"
+@using System.Diagnostics
+@using RMVCApp.Sample.Core.Shared
+@implements IWeatherView
+@implements IDisposable
+
+<h1>Weather</h1>
+
+<p>This component demonstrates showing data.</p>
+
+@if (forecasts == null) {
+    <p><em>Loading...</em></p>
+}
+else {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts) {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private WeatherForecastDTO[]? forecasts;
+
+    protected override async Task OnInitializedAsync() {
+        await Task.Delay(500);
+        Context.RegisterView(this);
+    }
+
+    public void Dispose() {
+        Context.UnregisterView(this);
+    }
+
+    public void SetView(WeatherForecastDTO[]? forecasts) {
+        this.forecasts = forecasts;
+    }
+}

@@ -1,212 +1,326 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace RMVC {
 
-    public abstract class RContext : IRPromoter {
+    public abstract class RContext {
 
         public static bool EnableDebugMode = false;
         public static bool EnableTestMode = false;
-        private static long PROGRESS_FLOOD_MS = 200;
 
-        //private Stopwatch progressStopwatch;
-        private RCommander _rCommander = null;
-        private static bool _configured = false;
+        private static bool hasBeenConfigured = false;
 
-        private static IRShell? _shell = null;
-        private static IRPromoter? _promoter = null;
-        private static Type? _promoterType = null;
+        private RCommander? rCommander = null;
+        private bool initialised => rCommander != null;
 
+        private DateTime lastProgressUpdateTime = DateTime.MinValue;
 
-        private static readonly Dictionary<BackgroundWorker, RCommandAsync> _processes =
-            new Dictionary<BackgroundWorker, RCommandAsync>();
+        private static RContext? promoterContext = null;
+        private static Type? promoterType = null;
+        internal static IRAppShell? AppShell { get; private set; } = null;
 
-        private static readonly Dictionary<Type, RContext> _contexts = new Dictionary<Type, RContext>();
+        private readonly ConcurrentDictionary<Task, CancellationTokenSource> activeTasks =
+           new ConcurrentDictionary<Task, CancellationTokenSource>();
 
-        private static readonly HashSet<Type> _pendingContexts = new HashSet<Type>();
+        private readonly Dictionary<Type, RMediator> mediatorsDictionary = new Dictionary<Type, RMediator>();
+        private readonly Dictionary<Type, RModel> modelsDictionary = new Dictionary<Type, RModel>();
 
-        public static void Configure(IRShell? appShell, Type? promoterType = null) {
-            if (_configured)
+        private static readonly Dictionary<Type, RContext> activeContexts = new Dictionary<Type, RContext>();
+
+        private static readonly HashSet<Type> pendingContexts = new HashSet<Type>();
+
+        public static void Create(Type contextConcreteType, IRAppShell? appShell = null) 
+        {
+            if (contextConcreteType == null) {
+                throw new ArgumentNullException(nameof(contextConcreteType), "The contextConcreteType cannot be null.");
+            }
+
+            if (activeContexts.ContainsKey(contextConcreteType)) {
+                throw new InvalidOperationException($"Could not instantiate: {contextConcreteType}. It may already have been created.");
+            }
+
+            try {
+                pendingContexts.Add(contextConcreteType);
+                var context = Activator.CreateInstance(contextConcreteType) as RContext;
+
+                if (context == null) {
+                    throw new InvalidOperationException("Failed to create an instance of the context.");
+                }
+
+                activeContexts.Add(contextConcreteType, context);
+
+                if (promoterType != null && contextConcreteType.Equals(promoterType)) {
+                    promoterContext = context;
+                }
+                else if (promoterContext == null) {
+                    promoterContext = context;
+                }
+
+                if (AppShell == null) {
+                    AppShell = appShell;
+                }
+
+                context.rCommander = new RCommander(context);
+
+                var models = context.RegisterModels();
+                foreach (RModel model in models) {
+                    context.modelsDictionary.Add(model.GetType(), model);
+                    model.rCommander = context.rCommander;
+                    model.Initialise();
+                }
+
+                var mediators = context.RegisterMediators();
+                foreach (RMediator mediator in mediators) {
+                    context.mediatorsDictionary.Add(mediator.GetType(), mediator);
+                    mediator.rCommander = context.rCommander;
+                }
+
+                RCommandBase startupCommand = context.RegisterStartupCommand();
+
+                if (startupCommand != null) {
+                    context.ExecuteCommand(startupCommand);
+                }
+
+                Log($"Context execution completed: {contextConcreteType?.Name}.");
+            }
+            catch (Exception ex) {
+                pendingContexts.Remove(contextConcreteType);
+                Log($"Cannot instantiate Context instance. Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        public static void RegisterView(IRViewContract view) {
+
+            RMediator? foundMediator = null;
+
+            foreach (var context in activeContexts.Values) {
+                if (context is null || context.mediatorsDictionary is null)
+                    continue;
+
+                foreach (var mediator in context.mediatorsDictionary.Values) {
+                    if (mediator.viewBaseType.IsAssignableFrom(view.GetType())) {
+                        foundMediator = mediator;
+
+                        // assuming aggressive re-registering can be forgiven:
+                        if (mediator.viewBase == view) {
+                            return;
+                        }
+                        break;
+                    }
+                }
+                if (foundMediator != null)
+                    break;
+            }
+
+            if (foundMediator == null) {
+                //Log("Mediator is null: " + view);
+                return; // Windows Forms Designer bug.
+            }
+            foundMediator.UpdateViewBase(view);
+
+            Log("Registered mediator + view: " + foundMediator.GetType().Name + " | " + view.GetType().Name);
+        }
+        public static void UnregisterView(IRViewContract view) {
+
+            RMediator? foundMediator = null;
+
+            foreach (var context in activeContexts.Values) {
+                if (context is null || context.mediatorsDictionary is null)
+                    continue;
+
+                foreach (var mediator in context.mediatorsDictionary.Values) {
+                    if (mediator.viewBaseType.IsAssignableFrom(view.GetType())) {
+                        foundMediator = mediator;
+                        if (foundMediator.viewBase == null) {
+                            return;
+                        }
+                    }
+                    if (foundMediator != null)
+                        break;
+
+                }
+                if (foundMediator != null)
+                    break;
+            }
+
+            if (foundMediator == null) {
+                //Log("Mediator is null: " + view);
+                return; // Windows Forms Designer bug.
+            }
+            Log("Unregistered mediator + view: " + foundMediator.GetType().Name + " | " + view.GetType().Name);
+
+        }
+        public static void Configure(Type? promoterType = null) {
+            if (hasBeenConfigured)
             {
                 Error("RContext.Configure(...) should only be called once at the start of the application's life.");
             }
-            _promoterType = promoterType;
-            _shell = appShell;
-            _configured = true;
+            RContext.promoterType = promoterType;
+            hasBeenConfigured = true;
         }
 
-        protected static RContext? GetContext(Type contextType) {
-            if (!_contexts.ContainsKey(contextType)) {
-                Error("RContext instance not found: " + contextType.Name + ".");
-                return null;
-            }
-            return _contexts[contextType];
-        }
-        protected static IRShell? GetShell() {
-            return _shell;
-        }
-        protected static IRPromoter? GetPromoter() {
-            return _promoter;
+        public static void Log(object? logMessage) {
+
+            logMessage = "[RMVC] " + logMessage;
+            Debug.WriteLine($"{logMessage}");
+            Console.WriteLine($"{logMessage}");
         }
 
-        protected abstract RCommandBase Run(object mainViewObj, RCommander rCommander);
 
-        public static void Execute(object mainView, Type contextConcreteType) {
-            RContext context;
-
-            if (contextConcreteType == null) {
-                Fatal("The contextConcreteType cannot be null.");
-            }
-            else if (_contexts.ContainsKey(contextConcreteType)) {
-                Fatal("Could not instantiate: " + contextConcreteType + ". It may already have been created.");
-            }
-            try {
-                _pendingContexts.Add(contextConcreteType);
-                context = Activator.CreateInstance(contextConcreteType) as RContext;
-                _contexts.Add(contextConcreteType, context);
-
-                if (_promoterType != null && contextConcreteType.Equals(_promoterType))
-                    _promoter = context;
-
-                else if (_promoter == null)
-                    _promoter = context;
-
-            }
-            catch(Exception) {
-                _pendingContexts.Remove(contextConcreteType);
-                Error("Cannot instantiate Context instance. Ensure Context super class does not have constructor parameters.");
-                return;
-            }
-            context._rCommander = new RCommander(context);
-            RCommandBase startupCommand =
-                context.Run(mainView, context._rCommander);
-
-            if (startupCommand != null)
-                context.ExecuteCommand(startupCommand);
-        }
-
-        /// <summary>
-        /// Called through reflection
-        /// </summary>
-        protected RContext() {
-            if (!_pendingContexts.Contains(GetType())){
-                Fatal("Do not instantiate a Context directly. Use the static Initialise() method.");
-            }
-            _pendingContexts.Remove(GetType());
-            //progressStopwatch = new Stopwatch();
-            //progressStopwatch.Start();
-        }
-
-        public abstract void SetProgressUpdate(RProgress[] progress);
-
-        public abstract void SetProgressComplete();
-        
-        public static void AbortAllCommands() {
-            foreach (var item in _processes) {
-                item.Value.Abort();
+        public void AbortAllCommands() {
+            foreach (var cancellationSource in activeTasks.Values) {
+                cancellationSource.Cancel();
             }
         }
 
-        public static void PrintDebug() {
-            Debug.WriteLine(typeof(RContext) + "TODO: Debug print");
-        }
-
-        internal protected void ExecuteCommand(RCommandBase command) {
+        internal void ExecuteCommand(RCommandBase command) {
             ExecuteCommand(command, null);
         }
-        internal void ExecuteCommand(
-            RCommandBase command
-            , RTracker? rTracker
-            , double percentCap = 100d
-        ) {
+
+        internal void ExecuteCommand(RCommandBase command, RTracker? rTracker = null, double percentCap = 100d) {
             percentCap = RHelper.ClampPercent(percentCap);
-            // Simple:
-            if (command is RCommand) {
-                ((RCommand)command).RunInternal(this);
+
+            if (command is RCommand syncCommand) {
+                // Synchronous execution
+                syncCommand.RunInternal(this);
             }
-            // Async:
-            else if (command is RCommandAsync) {
-                BackgroundWorker? thread =null;
-                Thread? debugThread = null;
-                RCommandAsync? async = (RCommandAsync)command;
-
-                bool createNewThread = rTracker == null;
-                
-                if (createNewThread && (EnableDebugMode || EnableTestMode)) {
-                    debugThread = new Thread(() => {
-                        async.RunInternal(new RTracker(async, this, percentCap));
-                    });
-                    debugThread.Start();
-                    debugThread.Join();
-                }
-                else if (createNewThread) {
-
-                    thread = new BackgroundWorker();
-                    thread.DoWork += (sender, e) => {
-                        try {
-                            async.RunInternal(new RTracker(async, this, percentCap));
-                        }
-                        catch (Exception ex) {
-                            Debug.WriteLine("ERROR CAUGHT c: " + ex.ToString());
-                            async.SetErrorInternal("RContext Threading Error.");
-                        }
-                    };
-                    _processes.Add(thread, async);
-                    //Debug.WriteLine("     --- Process added: " + async.Name + ". Total: " + _processes.Count);
-
-                    thread.RunWorkerCompleted += OnThreadCompleted;
-                    thread.RunWorkerAsync();
-                }
-                else {
-                    async.RunInternal(rTracker!.CreateChild(async, percentCap));
-                }
-            }
-        }// end ExecuteCommand()
-        private static void OnThreadCompleted(object sender, RunWorkerCompletedEventArgs e) {
-            BackgroundWorker thread = (BackgroundWorker)sender;
-            thread.RunWorkerCompleted -= OnThreadCompleted;
-
-            RCommandAsync cmd = _processes[thread];
-
-            _processes.Remove(thread);
-            //Debug.WriteLine("     --- Process removed: " + cmd.Name + ". Total: " + _processes.Count);
-            HandleThreadComplete(cmd);
-        }
-        private static void HandleThreadComplete(RCommandAsync command) {
-            if (command.hasParent == false) {
-                command.HandleThreadExit();
-                command.rTracker.context.HandleProgressComplete();
+            else if (command is RCommandAsync asyncCommand) {
+                // Delegate async command execution
+                _ = ExecuteCommandAsync(asyncCommand, rTracker, percentCap);
             }
         }
+
+        internal async Task ExecuteCommandAsync(
+            RCommandAsync asyncCommand,
+            RTracker? rTracker,
+            double percentCap
+        ) {
+
+            if (!asyncCommand.hasParent && !activeTasks.IsEmpty && asyncCommand.EnableAutoUpdate) {
+                Error("Cannot execute more than one top-level Async Command at a time.");
+                return;
+            }
+
+            var cancellationTokenSource = rTracker != null ? CancellationTokenSource.CreateLinkedTokenSource(rTracker.Token) : new CancellationTokenSource();
+
+            rTracker ??= new RTracker(asyncCommand, this, percentCap, cancellationTokenSource.Token);
+
+            var task = Task.Run(async () =>
+            {
+                try {
+                    await asyncCommand.RunInternalAsync(rTracker);
+                }
+                catch (Exception ex) {
+                    Log("ERROR CAUGHT in async command: " + ex.ToString());
+                    asyncCommand.SetErrorInternal("RContext Async Execution Error.");
+                }
+            }, cancellationTokenSource.Token);
+
+            // Track only top-level async commands
+            if (!asyncCommand.hasParent && !activeTasks.ContainsKey(task)) {
+
+                activeTasks[task] = cancellationTokenSource;
+            }
+
+            try {
+                await task;
+            }
+            finally {
+                if (!asyncCommand.hasParent && activeTasks.ContainsKey(task)) {
+                    HandleTaskComplete(asyncCommand);
+                    activeTasks.TryRemove(task, out _);
+                    Log($"Active tasks: {activeTasks.Count}");
+                }
+            }
+        }
+
+        protected abstract RCommandBase RegisterStartupCommand();
+        protected abstract RMediator[] RegisterMediators();
+        protected abstract RModel[] RegisterModels();
+
+        protected static TContext? ContextInstance<TContext>() where TContext : RContext {
+            if (activeContexts.TryGetValue(typeof(TContext), out RContext? context)) {
+                return context as TContext;
+            }
+            return null;
+        }
+
+        protected TMediator? Mediator<TMediator>() where TMediator : RMediator {
+            if (mediatorsDictionary.TryGetValue(typeof(TMediator), out RMediator? mediator)) {
+                return mediator as TMediator;
+            }
+            return null;
+        }
+
+        protected TModel? Model<TModel>() where TModel : RModel {
+            if (modelsDictionary.TryGetValue(typeof(TModel), out RModel? model)) {
+                return model as TModel;
+            }
+            return null;
+        }
+
+        protected static RContext? GetPromoter() {
+            return promoterContext;
+        }
+        private void HandleTaskComplete(RCommandAsync command) {
+
+            command.HandleThreadExit();
+
+            if (!command.hasParent && command.EnableAutoUpdate) {
+                command.rTracker?.context.HandleProgressComplete();
+            }
+        }
+
+
+        protected RContext() {
+            if (!pendingContexts.Contains(GetType())){
+                Fatal("Do not instantiate a Context directly. Use the static Initialise() method.");
+            }
+            pendingContexts.Remove(GetType());
+        }
+
 
         private void HandleProgressComplete() {
-            SetProgressComplete();
+            if (promoterContext == null) return;
+            
+            RCommandBase? cmd = promoterContext.RegisterProgressCompleteCommand();
+            if (cmd != null) {
+                ExecuteCommand(cmd);
+            }
         }
+
         internal void HandleProgressChange(RProgress[] progress) {
-            //Debug.WriteLine("prog: "+DateTime.Now + " > "+progressStopwatch.ElapsedMilliseconds);
-            //if (progressStopwatch.ElapsedMilliseconds < PROGRESS_FLOOD_MS)
-            //    return;
-            //else
-            //    progressStopwatch.Restart();
-            SetProgressUpdate(progress);
+            if ((DateTime.Now - lastProgressUpdateTime).TotalMilliseconds < 100)
+                return;
+            else
+                lastProgressUpdateTime = DateTime.Now;
+
+            if (promoterContext == null) return;
+            
+            RCommandBase? cmd = promoterContext.RegisterProgressUpdateCommand(progress);
+            if (cmd != null) {
+                ExecuteCommand(cmd);
+            }
         }
-        
+
+        virtual protected RCommandBase? RegisterProgressUpdateCommand(RProgress[] progress) {
+            return null;
+        }
+
+        virtual protected RCommandBase? RegisterProgressCompleteCommand() {
+            return null;
+        }
         private static void Fatal(string message) {
             throw new Exception(message);
         }
         private static void Error(string message) {
-            Debug.WriteLine("RMVC - ERROR: " + message);
+            Log("RMVC - ERROR: " + message);
         }
-        //internal static void Warning(string message) {
-        //    Debug.WriteLine("RMVC -  WARNING: " + message);
-        //}
-        //internal static void Log(string message) {
-        //    if (EnableDebug)
-        //        Debug.WriteLine("RMVC - LOG: " + message);
-        //}
+
     }
 }

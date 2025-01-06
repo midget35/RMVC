@@ -1,0 +1,50 @@
+﻿@page "/weather"
+@using RMVCApp.Sample.Core
+@using RMVCApp.Sample.Core.Shared
+
+@implements IDisposable
+@implements IWeatherView
+
+<PageTitle>Weather</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Weather forecast</MudText>
+<MudText Class="mb-8">This component demonstrates fetching data from the server.</MudText>
+
+@if (forecasts == null) {
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else {
+    <MudTable Items="forecasts" Hover="true" SortLabel="Sort By" Elevation="0" AllowUnsorted="false">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<WeatherForecastDTO, object>(x=>x.Date)">Date</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecastDTO, object>(x=>x.TemperatureC)">Temp. (C)</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecastDTO, object>(x=>x.TemperatureF)">Temp. (F)</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecastDTO, object>(x=>x.Summary!)">Summary</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Date">@context.Date</MudTd>
+                <MudTd DataLabel="Temp. (C)">@context.TemperatureC</MudTd>
+                <MudTd DataLabel="Temp. (F)">@context.TemperatureF</MudTd>
+                <MudTd DataLabel="Summary">@context.Summary</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+            </PagerContent>
+        </MudTable>
+}
+
+@code {
+    private WeatherForecastDTO[]? forecasts;
+
+    protected override async Task OnInitializedAsync() {
+        Context.RegisterView(this);
+        await Task.Delay(500);
+    }
+    public void Dispose() {
+        Context.UnregisterView(this);
+    }
+
+    public void SetView(WeatherForecastDTO[]? forecasts) {
+        this.forecasts = forecasts;
+    }
+}

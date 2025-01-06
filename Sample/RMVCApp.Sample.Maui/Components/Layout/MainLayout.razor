@@ -1,0 +1,93 @@
+﻿@using System.Runtime.InteropServices
+@using System.Diagnostics
+@using RMVCApp.Maui.Components
+@using RMVCApp.Sample.Core
+
+@inherits LayoutComponentBase
+@implements IAppShell
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+            <div class="progress-wrapper">
+                <Progress />
+            </div>
+        </article>
+    </main>
+
+</div>
+
+<style>
+    .page {
+        display: flex; /* Flexbox layout */
+        flex-direction: column; /* Stack items vertically */
+        height: 100vh; /* Full viewport height */
+    }
+
+    main {
+        flex-grow: 1; /* Allow main content to grow and fill available space */
+        display: flex; /* Keep flex behavior inside */
+        flex-direction: column; /* Ensure children stack vertically */
+    }
+
+    .progress-wrapper {
+        position: relative; /* Allow it to size naturally */
+        width: 100%; /* Stretch across the parent container */
+        background-color: lightgray; /* Optional styling */
+        border-top: 1px solid #ccc; /* Optional border at top */
+    }
+</style>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        Context.Create(typeof(Context), this);
+        base.OnInitialized();
+    }
+
+    public void SetAppEnabled(bool doEnable)
+    {
+    }
+
+    public Task<bool> ShowMessageBox(string title, string message, bool isYesNo = false)
+    {
+        if (Application.Current == null || Application.Current.MainPage == null)
+            return Task.FromResult(false);
+
+        return MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+            if (isYesNo)
+            {
+                return await Application.Current.MainPage.DisplayAlert(
+                    title,
+                    message,
+                    "Yes",
+                    "No"
+                );
+            }
+            else
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    title,
+                    message,
+                    "OK"
+                );
+                return true;
+            }
+        });
+    }
+
+    public void Dispose()
+    {
+    }
+}

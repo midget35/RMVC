@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMVCApp.Sample.Forms", "Sample\RMVCApp.Sample.Forms\RMVCApp.Sample.Forms.csproj", "{91607460-C685-4D8C-B412-67083DD1A1B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMVCApp.Sample.Avalonia", "Sample\RMVCApp.Sample.Avalonia\RMVCApp.Sample.Avalonia.csproj", "{3C02749F-EE55-4D85-9BD7-9DA8DB064B32}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMVCApp.Sample.Blazor", "Sample\RMVCApp.Sample.Blazor\RMVCApp.Sample.Blazor.csproj", "{09562A0D-6E69-42C6-9A6D-D2112CE828E0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMVCApp.Sample.Core", "Sample\RMVCApp.Sample.Core\RMVCApp.Sample.Core.csproj", "{CE8F7596-65E3-4D04-93A7-1F57DFA7AF89}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMVCApp.Sample.Maui", "Sample\RMVCApp.Sample.Maui\RMVCApp.Sample.Maui.csproj", "{7662A9F8-6EC7-467F-9789-8E43215DF3D7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMVCApp.Sample.WPF", "Sample\RMVCApp.Sample.WPF\RMVCApp.Sample.WPF.csproj", "{B1DEB3E6-7C93-4831-A85B-6B594A1E2118}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91607460-C685-4D8C-B412-67083DD1A1B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91607460-C685-4D8C-B412-67083DD1A1B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91607460-C685-4D8C-B412-67083DD1A1B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91607460-C685-4D8C-B412-67083DD1A1B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C02749F-EE55-4D85-9BD7-9DA8DB064B32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C02749F-EE55-4D85-9BD7-9DA8DB064B32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C02749F-EE55-4D85-9BD7-9DA8DB064B32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C02749F-EE55-4D85-9BD7-9DA8DB064B32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09562A0D-6E69-42C6-9A6D-D2112CE828E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09562A0D-6E69-42C6-9A6D-D2112CE828E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09562A0D-6E69-42C6-9A6D-D2112CE828E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09562A0D-6E69-42C6-9A6D-D2112CE828E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE8F7596-65E3-4D04-93A7-1F57DFA7AF89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE8F7596-65E3-4D04-93A7-1F57DFA7AF89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE8F7596-65E3-4D04-93A7-1F57DFA7AF89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE8F7596-65E3-4D04-93A7-1F57DFA7AF89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7662A9F8-6EC7-467F-9789-8E43215DF3D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7662A9F8-6EC7-467F-9789-8E43215DF3D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7662A9F8-6EC7-467F-9789-8E43215DF3D7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{7662A9F8-6EC7-467F-9789-8E43215DF3D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7662A9F8-6EC7-467F-9789-8E43215DF3D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7662A9F8-6EC7-467F-9789-8E43215DF3D7}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{B1DEB3E6-7C93-4831-A85B-6B594A1E2118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1DEB3E6-7C93-4831-A85B-6B594A1E2118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1DEB3E6-7C93-4831-A85B-6B594A1E2118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1DEB3E6-7C93-4831-A85B-6B594A1E2118}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9563A4A8-FE4E-4D35-B777-8B605A23B254}
+	EndGlobalSection
+EndGlobal

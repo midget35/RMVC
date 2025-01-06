@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMVCApp.Sample.Avalonia", "RMVCApp.Sample.Avalonia.csproj", "{F868813C-AC98-4739-9DDD-FC56955AA1D6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMVCApp.Sample.Core", "..\RMVCApp.Sample.Core\RMVCApp.Sample.Core.csproj", "{20FFB6F4-2227-4D72-94BC-BA975E5B5A8E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F868813C-AC98-4739-9DDD-FC56955AA1D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F868813C-AC98-4739-9DDD-FC56955AA1D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F868813C-AC98-4739-9DDD-FC56955AA1D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F868813C-AC98-4739-9DDD-FC56955AA1D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20FFB6F4-2227-4D72-94BC-BA975E5B5A8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20FFB6F4-2227-4D72-94BC-BA975E5B5A8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20FFB6F4-2227-4D72-94BC-BA975E5B5A8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20FFB6F4-2227-4D72-94BC-BA975E5B5A8E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1B6CBE37-0734-4477-BD0B-BB436CDF21F4}
+	EndGlobalSection
+EndGlobal

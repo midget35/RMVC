@@ -1,0 +1,34 @@
+﻿using RMVCApp.Sample.Core;
+using RMVCApp.Sample.Core.Shared;
+
+namespace RMVCApp.Forms {
+    public partial class CounterView : UserControl, ICounterView {
+        public event Action<int> SetCounterEvt;
+
+        public CounterView() {
+            InitializeComponent();
+            Context.RegisterView(this);
+        }
+
+
+        public void SetCounter(int count) {
+
+            if (this.InvokeRequired) {
+                this.Invoke(new Action(() => SetCounter(count)));
+                return;
+            }
+
+            currentCountLabel.Text = count.ToString();
+        }
+        protected void HandleDisposing() {
+            Context.UnregisterView(this);
+        }
+        private void testButton_Click(object sender, EventArgs e) {
+            int count = int.Parse(currentCountLabel.Text);
+            count++;
+            currentCountLabel.Text = count.ToString();
+
+            SetCounterEvt?.Invoke(count);
+        }
+    }
+}

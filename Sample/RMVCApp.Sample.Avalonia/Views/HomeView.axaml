@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:RMVCApp.Avalonia.ViewModels"
+             x:Class="RMVCApp.Avalonia.Views.HomeView"
+             x:DataType="vm:HomeViewModel">
+	<Design.DataContext>
+		<vm:HomeViewModel/>
+	</Design.DataContext>
+	<StackPanel Margin="10" Spacing="20">
+		<TextBlock Text="{Binding WelcomeMessage}" FontSize="24" FontWeight="Bold" Margin="0,0,0,10"/>
+
+		<TextBlock Text="Welcome to your new app." FontSize="20"/>
+		<Button Content="RMVC Message Test" Command="{Binding NavigateToRmvcTestCommand}" Width="160"/>
+		<Button Content="RMVC Progress Test" Command="{Binding RunRmvcProgressTestCommand}" Width="160"/>
+	</StackPanel>
+</UserControl>

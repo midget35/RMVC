@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace RMVC {
 
@@ -8,61 +8,84 @@ namespace RMVC {
         public RCommandAsync() {
 
         }
-        protected abstract void Run();
+        protected abstract Task RunAsync();
+        protected internal abstract bool EnableAutoUpdate { get;  }
         protected virtual string GetTitle() { return GetType().Name; }
 
         internal RTracker? rTracker { get; private set; } = null;
         private bool completeHandled = false;
         internal bool hasParent { get; private set; } = false;
 
-        internal void RunInternal(
-            RTracker rTracker
-        ) {
+        internal async Task RunInternalAsync(RTracker rTracker) {
             this.rTracker = rTracker;
             rTracker.SetProgressTitle(GetTitle());
-            Run();
-        }
-        internal void Abort() {
-            rTracker.Abort = true;
+
+            try {
+                if (rTracker.Token.IsCancellationRequested) {
+                    SetError("Operation was cancelled.");
+                    return;
+                }
+
+                await RunAsync();
+            }
+            catch (Exception ex) {
+                SetError(ex.Message);
+            }
+            finally {
+                HandleThreadExit();
+            }
         }
 
-        protected void ExecuteCommandAsync(
-            RCommandAsync command
-            , double percentCap = 100
+
+
+        protected async Task ExecuteCommandAsync(
+            RCommandAsync command,
+            double percentCap = 100
         ) {
             command.hasParent = true;
-            rTracker.context.ExecuteCommand(command, rTracker, percentCap);
+            if (rTracker != null) {
+                // Execute command with a scaled RTracker child using the provided percentCap
+                await rTracker.context.ExecuteCommandAsync(command, rTracker.CreateChild(command, percentCap), percentCap);
+            }
         }
         internal override void ExecuteCommandInternal(RCommand command) {
-            rTracker.context.ExecuteCommand(command);
+            rTracker?.context.ExecuteCommand(command);
         }
         protected virtual void OnCommandExit(bool success) { }
         internal void HandleThreadExit() {
             if (completeHandled) return;
-            else completeHandled = true;
+            completeHandled = true;
 
-            OnCommandExit(!rTracker.ErrorOrAbort);
+            if (rTracker != null) {
+                OnCommandExit(!rTracker.ErrorOrAbort);
+
+                // Ensure root-level tracker sends final 100% update
+                if (rTracker._parent == null) {
+                    rTracker.SetProgress(100, "Complete");
+                }
+                
+            }
         }
 
         internal void SetErrorInternal(string errorMessage) {
-            rTracker.SetError(errorMessage);
+            rTracker?.SetError(errorMessage);
             HandleThreadExit();
         }
-        protected void SetProgress(int parts, int total, string message = null) {
-            rTracker.SetProgress(parts, total, message);
+        protected void SetProgress(int parts, int total, string? message = null) {
+            rTracker?.SetProgress(parts, total, message ?? string.Empty);
         }
-        protected void SetProgress(double percent, string message = null) {
-            rTracker.SetProgress(percent, message);
+        protected void SetProgress(double percent, string? message = null) {
+            rTracker?.SetProgress(percent, message ?? string.Empty);
         }
-        protected void SetProgress(int percent, string message = null) {
-            rTracker.SetProgress(percent, message);
+        protected void SetProgress(int percent, string? message = null) {
+            rTracker?.SetProgress(percent, message ?? string.Empty);
         }
         protected void SetProgress(string message) {
-            rTracker.SetProgress(message);
+            rTracker?.SetProgress(message);
         }
 
-        protected void SetError(string errorMessage = null) {
-            rTracker.SetError(errorMessage);
+        protected void SetError(string? errorMessage = null) {
+            rTracker?.SetError(errorMessage ?? string.Empty);
         }
 
         protected double GetPercent(int parts, int totalParts) {
@@ -72,7 +95,7 @@ namespace RMVC {
             return RHelper.ClampPercent((double)totalParts / 10d);
         }
 
-        protected string ErrorMessage { get { return rTracker.ErrorMessage; } }
-        protected bool ErrorOrAbort { get { return rTracker.ErrorOrAbort; } }
+        protected string ErrorMessage { get { return rTracker?.ErrorMessage ?? string.Empty; } }
+        protected bool ErrorOrAbort { get { return rTracker?.ErrorOrAbort ?? false; } }
     }
 }

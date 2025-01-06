@@ -1,0 +1,110 @@
+﻿@namespace RMVCApp.Maui.Components
+@using System.Diagnostics
+@using RMVCApp.Sample.Core.Shared
+@implements IProgressView
+@implements IDisposable
+
+@code {
+    public event Action? AbortProgressEvt;
+
+    private IEnumerable<RProgress> _progressItems = Enumerable.Empty<RProgress>();
+
+    // Dynamically update progress items
+    public void SetProgress(RProgress[] progress) {
+        _progressItems = progress;
+
+        // Ensure UI updates happen on the dispatcher thread
+        InvokeAsync(() => {
+            StateHasChanged(); // Force UI refresh
+        });
+    }
+
+    public void ResetView() {
+        _progressItems = Enumerable.Empty<RProgress>();
+
+        InvokeAsync(() => {
+            StateHasChanged(); // Force UI refresh
+        });
+    }
+
+    [Parameter]
+    public IEnumerable<RProgress> ProgressItems {
+        get => _progressItems;
+        set {
+            _progressItems = value;
+            StateHasChanged();
+        }
+    }
+
+    protected override void OnInitialized() {
+        Context.RegisterView(this);
+    }
+
+    public void Dispose() {
+        Context.UnregisterView(this);
+    }
+
+    private void OnAbort() {
+        AbortProgressEvt?.Invoke();
+    }
+}
+
+<!-- Render Nothing If No Progress Items -->
+@if (_progressItems.Any()) {
+    <!-- Progress UI -->
+    <div class="progress-container">
+        <!-- Render Progress Items -->
+        @foreach (var item in _progressItems) {
+            <div class="progress-item">
+                <span class="progress-heading">@item.Heading</span>
+                <progress value="@item.Percent" max="100"></progress>
+                <span class="progress-percent">@($"{item.Percent}%")</span>
+            </div>
+        }
+
+        <!-- Abort Button -->
+        <button @onclick="OnAbort" class="abort-button">Abort Progress</button>
+    </div>
+}
+
+<!-- Styles -->
+<style>
+    .progress-container {
+        padding: 10px;
+        border: 1px solid #ccc;
+        width: 100%; /* Full width */
+        box-sizing: border-box; /* Include padding and borders in width calculation */
+    }
+
+    .progress-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .progress-heading {
+        width: 200px;
+    }
+
+    .progress-percent {
+        width: 50px;
+        text-align: right;
+        margin-left: 10px;
+    }
+
+    progress {
+        flex-grow: 1; /* Take up remaining space */
+        height: 20px;
+    }
+
+    .abort-button {
+        width: 100%; /* Full width */
+        height: 50px;
+        margin-top: 10px;
+        background-color: red;
+        color: white;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+    }
+</style>

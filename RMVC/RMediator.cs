@@ -1,21 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Text;
-
 namespace RMVC {
-    public abstract class RMediator : RActor, INotifyPropertyChanged {
-        public event PropertyChangedEventHandler? PropertyChanged;
-        private RCommander _rCommander;
-        public RMediator(RCommander rCommander) {
-            _rCommander = rCommander;
+    public abstract class RMediator : RCommandExecutorBase {
+
+        public bool IsActive => viewBase != null;
+
+        public IRViewContract? viewBase { get; set; }
+        internal Type viewBaseType { get; private set; }
+
+        internal void UpdateViewBase(IRViewContract viewBase) {
+            OnDisposing();
+            this.viewBase = viewBase;
+
+            Initialsed();
         }
-        protected void ExecuteCommand(RCommandBase command) {
-            _rCommander.Context.ExecuteCommand(command);
+
+        public RMediator(Type view) : base() {
+            this.viewBaseType = view;
         }
-        protected void OnPropertyChanged([CallerMemberName] string? name = null) {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        private void OnDisposing() {
+            if (viewBase != null) {
+
+                Disposing();
+                viewBase = null;
+            }
         }
+
+        abstract protected void Initialsed();
+        abstract protected void Disposing();
+
     }
 }

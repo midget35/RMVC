@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:RMVCApp.Avalonia.ViewModels"
+             xmlns:shared="clr-namespace:RMVCApp.Sample.Core.Shared;assembly=RMVCApp.Sample.Core"
+             x:Class="RMVCApp.Avalonia.Views.WeatherView"
+             x:DataType="vm:WeatherViewModel">
+	<Design.DataContext>
+		<vm:WeatherViewModel/>
+	</Design.DataContext>
+	<StackPanel Margin="10" Spacing="20">
+		<TextBlock Text="Weather Forecast" FontSize="24" FontWeight="Bold"/>
+
+		<!-- Combined Header and Data in a Grid -->
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<!-- Table Header -->
+			<Grid ColumnDefinitions="100,100,100,200" Grid.Row="0">
+				<Border BorderBrush="Black" BorderThickness="1,1,1,1">
+					<TextBlock Text="Date" FontWeight="Bold" HorizontalAlignment="Left" Margin="5,2"/>
+				</Border>
+				<Border Grid.Column="1" BorderBrush="Black" BorderThickness="1,1,1,1">
+					<TextBlock Text="Temp (°C)" FontWeight="Bold" HorizontalAlignment="Left" Margin="5,2"/>
+				</Border>
+				<Border Grid.Column="2" BorderBrush="Black" BorderThickness="1,1,1,1">
+					<TextBlock Text="Temp (°F)" FontWeight="Bold" HorizontalAlignment="Left" Margin="5,2"/>
+				</Border>
+				<Border Grid.Column="3" BorderBrush="Black" BorderThickness="1,1,1,1">
+					<TextBlock Text="Summary" FontWeight="Bold" HorizontalAlignment="Left" Margin="5,2"/>
+				</Border>
+			</Grid>
+
+			<!-- Items Control for Data -->
+			<ItemsControl ItemsSource="{Binding Forecasts}" Grid.Row="1">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="shared:WeatherForecastDTO">
+						<Grid ColumnDefinitions="100,100,100,200">
+							<Border BorderBrush="Black" BorderThickness="1,0,1,1">
+								<TextBlock Text="{Binding Date}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,2"/>
+							</Border>
+							<Border Grid.Column="1" BorderBrush="Black" BorderThickness="1,0,1,1">
+								<TextBlock Text="{Binding TemperatureC}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,2"/>
+							</Border>
+							<Border Grid.Column="2" BorderBrush="Black" BorderThickness="1,0,1,1">
+								<TextBlock Text="{Binding TemperatureF}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,2"/>
+							</Border>
+							<Border Grid.Column="3" BorderBrush="Black" BorderThickness="1,0,1,1">
+								<TextBlock Text="{Binding Summary}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,2"/>
+							</Border>
+						</Grid>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</Grid>
+	</StackPanel>
+</UserControl>

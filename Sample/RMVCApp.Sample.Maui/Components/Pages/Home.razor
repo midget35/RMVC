@@ -1,0 +1,43 @@
+﻿@page "/"
+@using System.Diagnostics
+@using RMVCApp.Sample.Core.Shared
+@implements IHomeView
+@implements IDisposable
+
+<h1>Hello, world!</h1>
+
+<p>Welcome to your new app.</p>
+
+<p>
+    <button WidthRequest="200" class="btn btn-primary" @onclick="OnRmvcMessageClick">RMVC Message Test</button>
+</p>
+<p>
+    <button WidthRequest="200" class="btn btn-primary" @onclick="OnRmvcProgressClick">RMVC Progress Test</button>
+</p>
+
+
+@code {
+
+
+    public event Action<string>? ShowRmvcMessageEvt;
+    public event Action? RunRmvcProgressTestEvt;
+
+    protected override void OnInitialized() {
+        Context.RegisterView(this);
+    }
+
+    public void Dispose() {
+        Context.UnregisterView(this);
+    }
+
+    public void SetView() {
+        // Add logic to set view here if needed
+    }
+
+    private void OnRmvcMessageClick() {
+        ShowRmvcMessageEvt?.Invoke("Hello from RMVC.");
+    }
+    private void OnRmvcProgressClick() {
+        RunRmvcProgressTestEvt?.Invoke();
+    }
+}

@@ -1,0 +1,95 @@
+﻿@namespace RMVCApp.Blazor.Components
+@using RMVCApp.Sample.Core
+@using RMVCApp.Sample.Core.Shared
+@implements IDisposable
+@implements IProgressView
+
+<div class="progress-control">
+    <!-- Render Progress Items -->
+    @if (_progressItems.Any()) {
+        @foreach (var item in _progressItems) {
+            <div class="progress-item">
+                <span class="progress-heading">@item.Heading</span>
+
+                <MudProgressLinear Value="@item.Percent" Color="Color.Primary" Height="20px" />
+
+                <span class="progress-percent">@($"{item.Percent}%")</span>
+            </div>
+        }
+        <MudButton OnClick="OnAbort" FullWidth="true" Variant="Variant.Filled" Color="Color.Primary">Abort Progress</MudButton>
+    }
+</div>
+
+<!-- Styles -->
+<style>
+    .progress-control {
+        padding: 4px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        height: 160px;
+        overflow-y: auto;
+    }
+
+    .progress-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .progress-heading {
+        width: 200px;
+        font-weight: bold;
+    }
+
+    progress {
+        flex-grow: 1;
+        height: 20px;
+    }
+
+    .progress-percent {
+        width: 50px;
+        text-align: right;
+    }
+
+    .abort-button {
+        width: 100%; 
+        height: 50px;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+
+@code {
+    public event Action? AbortProgressEvt;
+
+    private IEnumerable<global::RMVC.RProgress> _progressItems = Enumerable.Empty<global::RMVC.RProgress>();
+
+    public void SetProgress(global::RMVC.RProgress[] progress) {
+        _progressItems = progress;
+
+        // Force UI refresh
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void ResetView() {
+        _progressItems = Enumerable.Empty<global::RMVC.RProgress>();
+
+        // Force UI refresh
+        InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnInitialized() {
+        Context.RegisterView(this);
+    }
+
+    public void Dispose() {
+        Context.UnregisterView(this);
+    }
+
+    private void OnAbort() {
+        AbortProgressEvt?.Invoke();
+    }
+}

@@ -1,0 +1,19 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="RMVCApp.Avalonia.App"
+             xmlns:local="using:RMVCApp.Avalonia"
+             RequestedThemeVariant="Default"
+			 xmlns:vm="clr-namespace:RMVCApp.Avalonia.ViewModels"
+			 >
+	<Application.Resources>
+		<vm:ProgressViewModel x:Key="ProgressViewModel" />
+	</Application.Resources>
+	
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+  
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+</Application>
