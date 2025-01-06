@@ -2,6 +2,33 @@
 !Assets/**/*.meta
 !Packages/**/*.meta
 !ProjectSettings/**/*.meta
+!Packages/manifest.json
+!Packages/packages-lock.json
+!Packages/**/*.json
+
+!Library/ShaderCache/
+
+/[Ll]ibrary/
+Temp/
+/[Bb]uild/
+/[Bb]uilds/
+Logs/
+/UserSettings/
+*.apk
+*.unitypackage
+*.app
+
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+
+!Assets/**/*.unity
+!Assets/**/*.prefab
+
+!ProjectSettings/*.asset
+!ProjectSettings/*.json
+
+!Assets/TextMesh Pro/**
+
+
 
 # This .gitignore file should be placed at the root of your Unity project directory
 #
