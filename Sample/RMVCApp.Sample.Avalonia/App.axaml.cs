@@ -32,7 +32,7 @@ namespace RMVCApp.Avalonia {
                 };
 
                 //RMVCApp.RMVC.Context.Configure((MainWindowViewModel)mainWindow.DataContext);
-                Context.Create(typeof(Context), this);
+                RMVCAppFacade.Create(typeof(RMVCAppFacade), this);
 
                 desktop.MainWindow = mainWindow;
             }

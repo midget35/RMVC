@@ -28,11 +28,11 @@ namespace RMVCApp.WPF.ViewModels
             Count = count;
         }
         public void OnInitialised() {
-            Context.RegisterView(this);
+            RMVCAppFacade.RegisterView(this);
         }
 
         public void OnDisposed() {
-            Context.UnregisterView(this);
+            RMVCAppFacade.UnregisterView(this);
         }
         protected void OnPropertyChanged([CallerMemberName] string? name = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

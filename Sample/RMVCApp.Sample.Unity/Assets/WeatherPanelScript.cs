@@ -1,7 +1,5 @@
-using RMVCApp.RMVC;
-using RMVCApp.RMVC.Shared;
-using System.Collections;
-using System.Collections.Generic;
+using RMVCApp.Sample.Core;
+using RMVCApp.Sample.Core.Shared;
 using TMPro;
 using UnityEngine;
 
@@ -29,10 +27,10 @@ public class WeatherPanelScript : MonoBehaviour, IWeatherView
         }
     }
     void Start() {
-        Context.RegisterView(this);
+        RMVCAppFacade.RegisterView(this);
     }
     private void OnDestroy() {
-        Context.UnregisterView(this);
+        RMVCAppFacade.UnregisterView(this);
     }
 
 }

@@ -15,8 +15,8 @@ namespace RMVCApp.Sample.Core {
         protected override void Run() {
             Debug.WriteLine($"{DateTime.Now} >>> Do update progress...");
 
-            if (Context.Instance != null && Context.Instance?.ProgressModel != null)
-                Context.Instance.ProgressModel.Progress = progress;
+            if (RMVCAppFacade.Instance != null && RMVCAppFacade.Instance?.ProgressModel != null)
+                RMVCAppFacade.Instance.ProgressModel.Progress = progress;
             
             base.ExecuteCommand(new ShowViewCmd(Shared.Enums.ViewEnum.Progress));
             base.ExecuteCommand(new SetProgressViewCmd());

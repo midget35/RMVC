@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 namespace RMVCApp.Sample.Core {
     internal class SetWeatherViewCmd : RCommand {
         protected override void Run() {
-            Context.Instance?.WeatherMediator?.SetView(
-                Context.Instance?.WeatherModel?.forecasts ?? null
+            RMVCAppFacade.Instance?.WeatherMediator?.SetView(
+                RMVCAppFacade.Instance?.WeatherModel?.forecasts ?? null
             );
         }
     }

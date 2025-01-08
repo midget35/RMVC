@@ -7,7 +7,7 @@ namespace RMVCApp.Forms {
         public MainForm? mainFormParent;
         public MainView() {
             InitializeComponent();
-            Context.RegisterView(this);
+            RMVCAppFacade.RegisterView(this);
         }
 
         public void ShowView(Enums.ViewEnum viewEnum) {
@@ -35,7 +35,7 @@ namespace RMVCApp.Forms {
             }
         }
         protected void HandleDisposing() {
-            Context.UnregisterView(this);
+            RMVCAppFacade.UnregisterView(this);
         }
     }
 }

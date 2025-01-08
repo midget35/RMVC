@@ -9,7 +9,7 @@ namespace RMVC {
 
         }
         protected abstract Task RunAsync();
-        protected internal abstract bool EnableAutoUpdate { get;  }
+        protected internal virtual bool EnableAutoUpdate { get; } = true;
         protected virtual string GetTitle() { return GetType().Name; }
 
         internal RTracker? rTracker { get; private set; } = null;

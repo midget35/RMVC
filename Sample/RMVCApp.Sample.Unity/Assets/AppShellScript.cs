@@ -1,10 +1,6 @@
 using Assets.Util;
-using RMVC;
-using RMVCApp.RMVC;
+using RMVCApp.Sample.Core;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -21,7 +17,7 @@ public class AppShell : MonoBehaviour, IAppShell
 
         DontDestroyOnLoad(gameObject);
         Console.SetOut(new DebugOutputMonitor());
-        Context.Create(typeof(Context), this);
+        RMVCAppFacade.Create(typeof(RMVCAppFacade), this);
     }
     public void SetAppEnabled(bool doEnable) {
 

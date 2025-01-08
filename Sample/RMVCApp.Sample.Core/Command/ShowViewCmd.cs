@@ -10,7 +10,7 @@ namespace RMVCApp.Sample.Core {
         }
 
         protected override void Run() {
-            Context.Instance?.MainMediator?.ShowView(viewEnum);
+            RMVCAppFacade.Instance?.MainMediator?.ShowView(viewEnum);
         }
     }
 }

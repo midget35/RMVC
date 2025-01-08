@@ -1,7 +1,7 @@
 ﻿namespace RMVC {
     internal class RCommander {
-        internal RContext Context;
-        internal RCommander(RContext context) {
+        internal RFacade Context;
+        internal RCommander(RFacade context) {
             Context = context;
         }
         public void ExecuteCommand(RCommandBase command) {

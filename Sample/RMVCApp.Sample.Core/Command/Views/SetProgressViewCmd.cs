@@ -9,8 +9,8 @@ namespace RMVCApp.Sample.Core {
         }
 
         protected override void Run() {
-            if (Context.Instance != null && Context.Instance.ProgressModel != null)
-                Context.Instance.ProgressMediator?.SetView(Context.Instance.ProgressModel.Progress);
+            if (RMVCAppFacade.Instance != null && RMVCAppFacade.Instance.ProgressModel != null)
+                RMVCAppFacade.Instance.ProgressMediator?.SetView(RMVCAppFacade.Instance.ProgressModel.Progress);
         }
     }
 }

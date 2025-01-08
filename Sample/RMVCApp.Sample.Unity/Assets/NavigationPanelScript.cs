@@ -1,5 +1,5 @@
-using RMVCApp.RMVC;
-using RMVCApp.RMVC.Shared;
+using RMVCApp.Sample.Core;
+using RMVCApp.Sample.Core.Shared;
 using System;
 using UnityEngine;
 
@@ -23,9 +23,9 @@ public class NavigationPanelScript : MonoBehaviour, INavigationView
 
     void Start()
     {
-        Context.RegisterView(this);    
+        RMVCAppFacade.RegisterView(this);    
     }
     private void OnDestroy() {
-        Context.UnregisterView(this);
+        RMVCAppFacade.UnregisterView(this);
     }
 }

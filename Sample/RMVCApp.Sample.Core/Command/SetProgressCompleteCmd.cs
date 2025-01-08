@@ -9,7 +9,7 @@ namespace RMVCApp.Sample.Core {
         protected override void Run() {
 
             base.ExecuteCommand(new ShowViewCmd(Shared.Enums.ViewEnum.None));
-            Context.Instance?.ProgressMediator?.ResetView();
+            RMVCAppFacade.Instance?.ProgressMediator?.ResetView();
         }
     }
 }

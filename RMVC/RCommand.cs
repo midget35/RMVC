@@ -1,11 +1,11 @@
 ﻿namespace RMVC {
     public abstract class RCommand : RCommandBase {
 
-        protected internal RContext context;
+        protected internal RFacade context;
         protected abstract void Run();
 
 
-        internal void RunInternal(RContext context) {
+        internal void RunInternal(RFacade context) {
             this.context = context;
             Run();
         }

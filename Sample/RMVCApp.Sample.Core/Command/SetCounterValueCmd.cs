@@ -15,8 +15,8 @@ namespace RMVCApp.Sample.Core {
         }
 
         protected override void Run() {
-            if (Context.Instance?.CounterModel != null) {
-                Context.Instance.CounterModel.CounterCount = counterCount;
+            if (RMVCAppFacade.Instance?.CounterModel != null) {
+                RMVCAppFacade.Instance.CounterModel.CounterCount = counterCount;
             }
         }
     }

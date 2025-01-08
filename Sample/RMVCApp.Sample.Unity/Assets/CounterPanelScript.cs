@@ -1,8 +1,6 @@
-using RMVCApp.RMVC;
-using RMVCApp.RMVC.Shared;
+using RMVCApp.Sample.Core;
+using RMVCApp.Sample.Core.Shared;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -24,10 +22,10 @@ public class CounterPanelScript : MonoBehaviour, ICounterView
         SetCounterEvt?.Invoke(count);
     }
     void Start() {
-        Context.RegisterView(this);
+        RMVCAppFacade.RegisterView(this);
     }
     private void OnDestroy() {
-        Context.UnregisterView(this);
+        RMVCAppFacade.UnregisterView(this);
     }
 
 }

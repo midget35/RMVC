@@ -82,11 +82,11 @@
     }
 
     protected override void OnInitialized() {
-        Context.RegisterView(this);
+        RMVCAppFacade.RegisterView(this);
     }
 
     public void Dispose() {
-        Context.UnregisterView(this);
+        RMVCAppFacade.UnregisterView(this);
     }
 
     private void OnAbort() {

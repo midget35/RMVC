@@ -21,7 +21,7 @@ namespace RMVCApp.WPF {
 
 
         protected override void OnStartup(StartupEventArgs e) {
-            Context.Create(typeof(Context), this);
+            RMVCAppFacade.Create(typeof(RMVCAppFacade), this);
             base.OnStartup(e);
         }
     }

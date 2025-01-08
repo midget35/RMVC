@@ -51,7 +51,7 @@
 
     protected override void OnInitialized()
     {
-        Context.Create(typeof(Context), this);
+        RMVCAppFacade.Create(typeof(RMVCAppFacade), this);
         base.OnInitialized();
     }
 

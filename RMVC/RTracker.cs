@@ -13,7 +13,7 @@ namespace RMVC {
         internal bool ErrorOrAbort { get { return _error || _abort; } }
 
         internal RCommandAsync _command;
-        internal RContext context;
+        internal RFacade context;
         private readonly double _cap;
         private readonly bool _allowAutoUpdate;
 
@@ -27,7 +27,7 @@ namespace RMVC {
         private bool _abort;
         private bool _error;
 
-        internal RTracker(RCommandAsync command, RContext context, double cap, CancellationToken cancellationToken) {
+        internal RTracker(RCommandAsync command, RFacade context, double cap, CancellationToken cancellationToken) {
             Id = Guid.NewGuid().ToString();
             _cap = cap;
             _parent = null;
@@ -83,7 +83,7 @@ namespace RMVC {
             if (!string.IsNullOrWhiteSpace(text))
                 _text = text;
 
-            Debug.WriteLine($"[RTracker] Setting progress in {Id}: Local percent: {_localPercent}, Increment: {percentComplete - _localPercent}");
+            Log($"Setting progress in {Id}: Local percent: {_localPercent}, Increment: {percentComplete - _localPercent}");
             UpdatePercent(percentComplete - _localPercent);
         }
 
@@ -123,7 +123,7 @@ namespace RMVC {
 
         internal RTracker CreateChild(RCommandAsync command, double percentCap) {
             percentCap = RHelper.ClampPercent(percentCap);  // Ensure cap is within bounds
-            Debug.WriteLine($"[RTracker] Creating child tracker for {command.GetType().Name} with cap: {percentCap}");
+            Log($"Creating child tracker for {command.GetType().Name} with cap: {percentCap}");
 
             _child = new RTracker(command, context, percentCap * (_cap / 100d), Token);
             _child._parent = this;
@@ -169,7 +169,7 @@ namespace RMVC {
             // Accumulate local percent without rounding for internal accuracy
             _localPercent += localPercentIncrement;
 
-            Debug.WriteLine($"[RTracker] Updating percent in {Id}: New local percent: {_localPercent}");
+            Log($"Updating percent in {Id}: New local percent: {_localPercent}");
 
             if (_parent != null) {
                 // Calculate parent increment proportionally based on this tracker's cap and apply it immediately
@@ -178,7 +178,7 @@ namespace RMVC {
                 // Propagate to parent with a fractional increment
                 _parent.UpdatePercent(parentIncrement);
 
-                Debug.WriteLine($"[RTracker] Propagating to parent in {Id}: Local increment = {localPercentIncrement}, Parent increment = {parentIncrement}");
+                Log($"Propagating to parent in {Id}: Local increment = {localPercentIncrement}, Parent increment = {parentIncrement}");
             }
             else {
                 // At the root level, ensure rounding only when displaying to avoid losing small increments
@@ -212,6 +212,9 @@ namespace RMVC {
 
         private int ToInt(double val) {
             return Convert.ToInt32(val);
+        }
+        private void Log(string msg) {
+            RFacade.Log("[RTracker] " + msg);
         }
     }
 }

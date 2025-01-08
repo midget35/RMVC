@@ -6,7 +6,7 @@ namespace RMVCApp.Forms {
         private ProgressForm? _progressForm = null;
         public MainForm() {
 
-            Context.Create(typeof(Context), this);
+            RMVCAppFacade.Create(typeof(RMVCAppFacade), this);
 
             InitializeComponent();
             mainView1.mainFormParent = this;

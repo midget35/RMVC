@@ -26,12 +26,12 @@ namespace RMVCApp.WPF.ViewModels {
 
         public void OnInitialised() {
             // Register the view with the context
-            Context.RegisterView(this);
+            RMVCAppFacade.RegisterView(this);
         }
 
         public void OnDisposed() {
             // Unregister the view from the context
-            Context.UnregisterView(this);
+            RMVCAppFacade.UnregisterView(this);
         }
 
         protected void OnPropertyChanged([CallerMemberName] string? name = null) {

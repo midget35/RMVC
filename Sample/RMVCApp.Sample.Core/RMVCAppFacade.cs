@@ -3,8 +3,8 @@ using RMVCApp.Sample.Core.Shared;
 
 namespace RMVCApp.Sample.Core {
 
-    public class Context : RContext {
-        internal static Context? Instance => RContext.ContextInstance<Context>();
+    public class RMVCAppFacade : RFacade {
+        internal static RMVCAppFacade? Instance => RFacade.ContextInstance<RMVCAppFacade>();
 
         // Models
         internal CounterModel? CounterModel => base.Model<CounterModel>();
