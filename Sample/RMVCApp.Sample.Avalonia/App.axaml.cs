@@ -31,7 +31,6 @@ namespace RMVCApp.Avalonia {
                     DataContext = new MainWindowViewModel(),
                 };
 
-                //RMVCApp.RMVC.Context.Configure((MainWindowViewModel)mainWindow.DataContext);
                 RMVCAppFacade.Create(typeof(RMVCAppFacade), this);
 
                 desktop.MainWindow = mainWindow;

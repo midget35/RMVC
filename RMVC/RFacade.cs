@@ -19,7 +19,7 @@ namespace RMVC {
 
         private DateTime lastProgressUpdateTime = DateTime.MinValue;
 
-        private static RFacade? promoterContext = null;
+        private static RFacade? promoterFacade = null;
         private static Type? promoterType = null;
         internal static IRAppShell? AppShell { get; private set; } = null;
 
@@ -29,67 +29,67 @@ namespace RMVC {
         private readonly Dictionary<Type, RMediator> mediatorsDictionary = new Dictionary<Type, RMediator>();
         private readonly Dictionary<Type, RModel> modelsDictionary = new Dictionary<Type, RModel>();
 
-        private static readonly Dictionary<Type, RFacade> activeContexts = new Dictionary<Type, RFacade>();
+        private static readonly Dictionary<Type, RFacade> activeFacades = new Dictionary<Type, RFacade>();
 
-        private static readonly HashSet<Type> pendingContexts = new HashSet<Type>();
+        private static readonly HashSet<Type> pendingFacades = new HashSet<Type>();
 
-        public static void Create(Type contextConcreteType, IRAppShell? appShell = null) 
+        public static void Create(Type facadeConcreteType, IRAppShell? appShell = null) 
         {
-            if (contextConcreteType == null) {
-                throw new ArgumentNullException(nameof(contextConcreteType), "The contextConcreteType cannot be null.");
+            if (facadeConcreteType == null) {
+                throw new ArgumentNullException(nameof(facadeConcreteType), "The facadeConcreteType cannot be null.");
             }
 
-            if (activeContexts.ContainsKey(contextConcreteType)) {
-                throw new InvalidOperationException($"Could not instantiate: {contextConcreteType}. It may already have been created.");
+            if (activeFacades.ContainsKey(facadeConcreteType)) {
+                throw new InvalidOperationException($"Could not instantiate: {facadeConcreteType}. It may already have been created.");
             }
 
             try {
-                pendingContexts.Add(contextConcreteType);
-                var context = Activator.CreateInstance(contextConcreteType) as RFacade;
+                pendingFacades.Add(facadeConcreteType);
+                var facade = Activator.CreateInstance(facadeConcreteType) as RFacade;
 
-                if (context == null) {
-                    throw new InvalidOperationException("Failed to create an instance of the context.");
+                if (facade == null) {
+                    throw new InvalidOperationException("Failed to create an instance of the facade.");
                 }
 
-                activeContexts.Add(contextConcreteType, context);
+                activeFacades.Add(facadeConcreteType, facade);
 
-                if (promoterType != null && contextConcreteType.Equals(promoterType)) {
-                    promoterContext = context;
+                if (promoterType != null && facadeConcreteType.Equals(promoterType)) {
+                    promoterFacade = facade;
                 }
-                else if (promoterContext == null) {
-                    promoterContext = context;
+                else if (promoterFacade == null) {
+                    promoterFacade = facade;
                 }
 
                 if (AppShell == null) {
                     AppShell = appShell;
                 }
 
-                context.rCommander = new RCommander(context);
+                facade.rCommander = new RCommander(facade);
 
-                var models = context.RegisterModels();
+                var models = facade.RegisterModels();
                 foreach (RModel model in models) {
-                    context.modelsDictionary.Add(model.GetType(), model);
-                    model.rCommander = context.rCommander;
+                    facade.modelsDictionary.Add(model.GetType(), model);
+                    model.rCommander = facade.rCommander;
                     model.Initialise();
                 }
 
-                var mediators = context.RegisterMediators();
+                var mediators = facade.RegisterMediators();
                 foreach (RMediator mediator in mediators) {
-                    context.mediatorsDictionary.Add(mediator.GetType(), mediator);
-                    mediator.rCommander = context.rCommander;
+                    facade.mediatorsDictionary.Add(mediator.GetType(), mediator);
+                    mediator.rCommander = facade.rCommander;
                 }
 
-                RCommandBase startupCommand = context.RegisterStartupCommand();
+                RCommandBase startupCommand = facade.RegisterStartupCommand();
 
                 if (startupCommand != null) {
-                    context.ExecuteCommand(startupCommand);
+                    facade.ExecuteCommand(startupCommand);
                 }
 
-                Log($"Context execution completed: {contextConcreteType?.Name}.");
+                Log($"Facade execution completed: {facadeConcreteType?.Name}.");
             }
             catch (Exception ex) {
-                pendingContexts.Remove(contextConcreteType);
-                Log($"Cannot instantiate Context instance. Error: {ex.Message}");
+                pendingFacades.Remove(facadeConcreteType);
+                Log($"Cannot instantiate Facade instance. Error: {ex.Message}");
                 throw;
             }
         }
@@ -98,11 +98,11 @@ namespace RMVC {
 
             RMediator? foundMediator = null;
 
-            foreach (var context in activeContexts.Values) {
-                if (context is null || context.mediatorsDictionary is null)
+            foreach (var facade in activeFacades.Values) {
+                if (facade is null || facade.mediatorsDictionary is null)
                     continue;
 
-                foreach (var mediator in context.mediatorsDictionary.Values) {
+                foreach (var mediator in facade.mediatorsDictionary.Values) {
                     if (mediator.viewBaseType.IsAssignableFrom(view.GetType())) {
                         foundMediator = mediator;
 
@@ -129,11 +129,11 @@ namespace RMVC {
 
             RMediator? foundMediator = null;
 
-            foreach (var context in activeContexts.Values) {
-                if (context is null || context.mediatorsDictionary is null)
+            foreach (var facade in activeFacades.Values) {
+                if (facade is null || facade.mediatorsDictionary is null)
                     continue;
 
-                foreach (var mediator in context.mediatorsDictionary.Values) {
+                foreach (var mediator in facade.mediatorsDictionary.Values) {
                     if (mediator.viewBaseType.IsAssignableFrom(view.GetType())) {
                         foundMediator = mediator;
                         if (foundMediator.viewBase == null) {
@@ -158,7 +158,7 @@ namespace RMVC {
         public static void Configure(Type? promoterType = null) {
             if (hasBeenConfigured)
             {
-                Error("RContext.Configure(...) should only be called once at the start of the application's life.");
+                Error("RFacade.Configure(...) should only be called once at the start of the application's life.");
             }
             RFacade.promoterType = promoterType;
             hasBeenConfigured = true;
@@ -220,7 +220,7 @@ namespace RMVC {
                 }
                 catch (Exception ex) {
                     Log("ERROR CAUGHT in async command: " + ex.ToString());
-                    asyncCommand.SetErrorInternal("RContext Async Execution Error.");
+                    asyncCommand.SetErrorInternal("RFacade Async Execution Error.");
                 }
             }, cancellationTokenSource.Token);
 
@@ -246,9 +246,9 @@ namespace RMVC {
         protected abstract RMediator[] RegisterMediators();
         protected abstract RModel[] RegisterModels();
 
-        protected static TContext? ContextInstance<TContext>() where TContext : RFacade {
-            if (activeContexts.TryGetValue(typeof(TContext), out RFacade? context)) {
-                return context as TContext;
+        protected static TFacade? FacadeInstance<TFacade>() where TFacade : RFacade {
+            if (activeFacades.TryGetValue(typeof(TFacade), out RFacade? facade)) {
+                return facade as TFacade;
             }
             return null;
         }
@@ -268,30 +268,30 @@ namespace RMVC {
         }
 
         protected static RFacade? GetPromoter() {
-            return promoterContext;
+            return promoterFacade;
         }
         private void HandleTaskComplete(RCommandAsync command) {
 
             command.HandleThreadExit();
 
             if (!command.hasParent && command.EnableAutoUpdate) {
-                command.rTracker?.context.HandleProgressComplete();
+                command.rTracker?.facade.HandleProgressComplete();
             }
         }
 
 
         protected RFacade() {
-            if (!pendingContexts.Contains(GetType())){
-                Fatal("Do not instantiate a Context directly. Use the static Initialise() method.");
+            if (!pendingFacades.Contains(GetType())){
+                Fatal("Do not instantiate a Facade directly. Use the static Initialise() method.");
             }
-            pendingContexts.Remove(GetType());
+            pendingFacades.Remove(GetType());
         }
 
 
         private void HandleProgressComplete() {
-            if (promoterContext == null) return;
+            if (promoterFacade == null) return;
             
-            RCommandBase? cmd = promoterContext.RegisterProgressCompleteCommand();
+            RCommandBase? cmd = promoterFacade.RegisterProgressCompleteCommand();
             if (cmd != null) {
                 ExecuteCommand(cmd);
             }
@@ -303,9 +303,9 @@ namespace RMVC {
             else
                 lastProgressUpdateTime = DateTime.Now;
 
-            if (promoterContext == null) return;
+            if (promoterFacade == null) return;
             
-            RCommandBase? cmd = promoterContext.RegisterProgressUpdateCommand(progress);
+            RCommandBase? cmd = promoterFacade.RegisterProgressUpdateCommand(progress);
             if (cmd != null) {
                 ExecuteCommand(cmd);
             }

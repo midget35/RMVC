@@ -1,11 +1,11 @@
 ﻿namespace RMVC {
     internal class RCommander {
-        internal RFacade Context;
-        internal RCommander(RFacade context) {
-            Context = context;
+        internal RFacade? Facade;
+        internal RCommander(RFacade facade) {
+            Facade = facade;
         }
         public void ExecuteCommand(RCommandBase command) {
-            Context.ExecuteCommand(command);
+            Facade?.ExecuteCommand(command);
         }
     }
 }

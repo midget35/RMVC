@@ -4,7 +4,7 @@ using RMVCApp.Sample.Core.Shared;
 namespace RMVCApp.Sample.Core {
 
     public class RMVCAppFacade : RFacade {
-        internal static RMVCAppFacade? Instance => RFacade.ContextInstance<RMVCAppFacade>();
+        internal static RMVCAppFacade? Instance => RFacade.FacadeInstance<RMVCAppFacade>();
 
         // Models
         internal CounterModel? CounterModel => base.Model<CounterModel>();

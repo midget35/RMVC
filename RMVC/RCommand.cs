@@ -1,16 +1,16 @@
 ﻿namespace RMVC {
     public abstract class RCommand : RCommandBase {
 
-        protected internal RFacade context;
+        protected internal RFacade? facade;
         protected abstract void Run();
 
 
-        internal void RunInternal(RFacade context) {
-            this.context = context;
+        internal void RunInternal(RFacade facade) {
+            this.facade = facade;
             Run();
         }
         internal override void ExecuteCommandInternal(RCommand command) {
-            context.ExecuteCommand(command);
+            facade?.ExecuteCommand(command);
         }
 
     }

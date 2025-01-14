@@ -13,7 +13,7 @@ namespace RMVC {
         internal bool ErrorOrAbort { get { return _error || _abort; } }
 
         internal RCommandAsync _command;
-        internal RFacade context;
+        internal RFacade facade;
         private readonly double _cap;
         private readonly bool _allowAutoUpdate;
 
@@ -27,7 +27,7 @@ namespace RMVC {
         private bool _abort;
         private bool _error;
 
-        internal RTracker(RCommandAsync command, RFacade context, double cap, CancellationToken cancellationToken) {
+        internal RTracker(RCommandAsync command, RFacade facade, double cap, CancellationToken cancellationToken) {
             Id = Guid.NewGuid().ToString();
             _cap = cap;
             _parent = null;
@@ -36,7 +36,7 @@ namespace RMVC {
             _command = command;
             _allowAutoUpdate = command.EnableAutoUpdate;
 
-            this.context = context;
+            this.facade = facade;
             _text = null;
             _title = null;
             _abort = false;
@@ -125,7 +125,7 @@ namespace RMVC {
             percentCap = RHelper.ClampPercent(percentCap);  // Ensure cap is within bounds
             Log($"Creating child tracker for {command.GetType().Name} with cap: {percentCap}");
 
-            _child = new RTracker(command, context, percentCap * (_cap / 100d), Token);
+            _child = new RTracker(command, facade, percentCap * (_cap / 100d), Token);
             _child._parent = this;
 
             return _child;
@@ -161,7 +161,7 @@ namespace RMVC {
             var progressSet = GetProgressReport();
 
             if (progressSet.Length > 0) {
-                context.HandleProgressChange(progressSet);
+                facade.HandleProgressChange(progressSet);
             }
         }
 

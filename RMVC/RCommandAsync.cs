@@ -45,11 +45,11 @@ namespace RMVC {
             command.hasParent = true;
             if (rTracker != null) {
                 // Execute command with a scaled RTracker child using the provided percentCap
-                await rTracker.context.ExecuteCommandAsync(command, rTracker.CreateChild(command, percentCap), percentCap);
+                await rTracker.facade.ExecuteCommandAsync(command, rTracker.CreateChild(command, percentCap), percentCap);
             }
         }
         internal override void ExecuteCommandInternal(RCommand command) {
-            rTracker?.context.ExecuteCommand(command);
+            rTracker?.facade.ExecuteCommand(command);
         }
         protected virtual void OnCommandExit(bool success) { }
         internal void HandleThreadExit() {
