@@ -2,7 +2,7 @@
 using System;
 
 namespace RMVCApp.Sample.Core.Shared {
-    public interface ICounterView : IRViewContract {
+    public interface ICounterView : IRContract {
         event Action<int>? SetCounterEvt;
         void SetCounter(int count);
     }

@@ -5,7 +5,7 @@
         protected RCommandExecutorBase() {
         }
         protected void ExecuteCommand(RCommandBase command) {
-            rCommander?.Facade.ExecuteCommand(command);
+            rCommander?.Facade?.ExecuteCommand(command);
         }
     }
 }

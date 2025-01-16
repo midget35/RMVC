@@ -4,10 +4,10 @@ namespace RMVC {
 
         public bool IsActive => viewBase != null;
 
-        public IRViewContract? viewBase { get; set; }
+        public IRContract? viewBase { get; set; }
         internal Type viewBaseType { get; private set; }
 
-        internal void UpdateViewBase(IRViewContract viewBase) {
+        internal void UpdateViewBase(IRContract viewBase) {
             OnDisposing();
             this.viewBase = viewBase;
 

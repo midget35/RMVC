@@ -94,7 +94,7 @@ namespace RMVC {
             }
         }
 
-        public static void RegisterView(IRViewContract view) {
+        public static void RegisterView(IRContract view) {
 
             RMediator? foundMediator = null;
 
@@ -125,7 +125,7 @@ namespace RMVC {
 
             Log("Registered mediator + view: " + foundMediator.GetType().Name + " | " + view.GetType().Name);
         }
-        public static void UnregisterView(IRViewContract view) {
+        public static void UnregisterView(IRContract view) {
 
             RMediator? foundMediator = null;
 
