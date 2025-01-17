@@ -23,11 +23,11 @@ namespace RMVCApp.WPF.ViewModels {
         }
 
         public void OnInitialised() {
-            RMVCAppFacade.RegisterView(this);
+            RMVCAppFacade.RegisterActor(this);
         }
 
         public void OnDisposed() {
-            RMVCAppFacade.UnregisterView(this);
+            RMVCAppFacade.UnregisterActor(this);
         }
 
         public void SetView() {

@@ -18,11 +18,11 @@
     private int currentCount = 0;
 
     protected override void OnInitialized() {
-        RMVCAppFacade.RegisterView(this);
+        RMVCAppFacade.RegisterActor(this);
     }
 
     public void Dispose() {
-        RMVCAppFacade.UnregisterView(this);
+        RMVCAppFacade.UnregisterActor(this);
     }
 
     public void SetCounter(int val) {

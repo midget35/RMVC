@@ -6,6 +6,8 @@ namespace RMVCApp.Sample.Core {
     public class RMVCAppFacade : RFacade {
         internal static RMVCAppFacade? Instance => RFacade.FacadeInstance<RMVCAppFacade>();
 
+        internal IRAppShell? App => AppShell;
+
         // Models
         internal CounterModel? CounterModel => base.Model<CounterModel>();
         internal WeatherModel? WeatherModel => base.Model<WeatherModel>();

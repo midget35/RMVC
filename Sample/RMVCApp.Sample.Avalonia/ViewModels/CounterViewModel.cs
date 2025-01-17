@@ -32,12 +32,12 @@ namespace RMVCApp.Avalonia.ViewModels {
 
         protected internal override void OnViewDisposed() {
 
-            RMVCAppFacade.UnregisterView(this);
+            RMVCAppFacade.UnregisterActor(this);
 
         }
 
         protected internal override void OnViewInitialized() {
-            RMVCAppFacade.RegisterView(this);
+            RMVCAppFacade.RegisterActor(this);
         }
     }
 }

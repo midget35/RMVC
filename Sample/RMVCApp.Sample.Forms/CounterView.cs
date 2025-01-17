@@ -7,7 +7,7 @@ namespace RMVCApp.Forms {
 
         public CounterView() {
             InitializeComponent();
-            RMVCAppFacade.RegisterView(this);
+            RMVCAppFacade.RegisterActor(this);
         }
 
 
@@ -21,7 +21,7 @@ namespace RMVCApp.Forms {
             currentCountLabel.Text = count.ToString();
         }
         protected void HandleDisposing() {
-            RMVCAppFacade.UnregisterView(this);
+            RMVCAppFacade.UnregisterActor(this);
         }
         private void testButton_Click(object sender, EventArgs e) {
             int count = int.Parse(currentCountLabel.Text);

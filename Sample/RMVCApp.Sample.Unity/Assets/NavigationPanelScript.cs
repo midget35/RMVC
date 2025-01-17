@@ -23,9 +23,9 @@ public class NavigationPanelScript : MonoBehaviour, INavigationView
 
     void Start()
     {
-        RMVCAppFacade.RegisterView(this);    
+        RMVCAppFacade.RegisterActor(this);    
     }
     private void OnDestroy() {
-        RMVCAppFacade.UnregisterView(this);
+        RMVCAppFacade.UnregisterActor(this);
     }
 }

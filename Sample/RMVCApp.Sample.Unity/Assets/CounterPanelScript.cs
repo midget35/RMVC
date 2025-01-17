@@ -22,10 +22,10 @@ public class CounterPanelScript : MonoBehaviour, ICounterView
         SetCounterEvt?.Invoke(count);
     }
     void Start() {
-        RMVCAppFacade.RegisterView(this);
+        RMVCAppFacade.RegisterActor(this);
     }
     private void OnDestroy() {
-        RMVCAppFacade.UnregisterView(this);
+        RMVCAppFacade.UnregisterActor(this);
     }
 
 }

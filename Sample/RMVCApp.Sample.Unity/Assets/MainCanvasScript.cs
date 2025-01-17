@@ -38,9 +38,9 @@ public class MainCanvasScript : MonoBehaviour, IMainView
     }
 
     void Start() {
-        RMVCAppFacade.RegisterView(this);
+        RMVCAppFacade.RegisterActor(this);
     }
     private void OnDestroy() {
-        RMVCAppFacade.UnregisterView(this);
+        RMVCAppFacade.UnregisterActor(this);
     }
 }

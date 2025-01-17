@@ -31,11 +31,11 @@ namespace RMVCApp.WPF.ViewModels {
         }
 
         public void OnDisposed() {
-            RMVCAppFacade.UnregisterView(this);
+            RMVCAppFacade.UnregisterActor(this);
         }
 
         public void OnInitialised() {
-            RMVCAppFacade.RegisterView(this);
+            RMVCAppFacade.RegisterActor(this);
         }
 
         public void SetProgress(RProgress[] progress) {

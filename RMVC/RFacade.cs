@@ -5,7 +5,8 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RMVC {
+namespace RMVC
+{
 
     public abstract class RFacade {
 
@@ -21,7 +22,7 @@ namespace RMVC {
 
         private static RFacade? promoterFacade = null;
         private static Type? promoterType = null;
-        internal static IRAppShell? AppShell { get; private set; } = null;
+        internal protected static IRAppShell? AppShell { get; private set; } = null;
 
         private readonly ConcurrentDictionary<Task, CancellationTokenSource> activeTasks =
            new ConcurrentDictionary<Task, CancellationTokenSource>();
@@ -94,7 +95,7 @@ namespace RMVC {
             }
         }
 
-        public static void RegisterView(IRContract view) {
+        public static void RegisterActor(IRContract view) {
 
             RMediator? foundMediator = null;
 
@@ -125,7 +126,7 @@ namespace RMVC {
 
             Log("Registered mediator + view: " + foundMediator.GetType().Name + " | " + view.GetType().Name);
         }
-        public static void UnregisterView(IRContract view) {
+        public static void UnregisterActor(IRContract view) {
 
             RMediator? foundMediator = null;
 

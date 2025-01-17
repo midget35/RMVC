@@ -40,11 +40,11 @@ else {
 
     protected override async Task OnInitializedAsync() {
         await Task.Delay(500);
-        RMVCAppFacade.RegisterView(this);
+        RMVCAppFacade.RegisterActor(this);
     }
 
     public void Dispose() {
-        RMVCAppFacade.UnregisterView(this);
+        RMVCAppFacade.UnregisterActor(this);
     }
 
     public void SetView(WeatherForecastDTO[]? forecasts) {

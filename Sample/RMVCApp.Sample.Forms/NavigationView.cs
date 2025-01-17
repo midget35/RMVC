@@ -5,14 +5,14 @@ namespace RMVCApp.Forms {
     public partial class NavigationView : UserControl, INavigationView {
         public NavigationView() {
             InitializeComponent();
-            RMVCAppFacade.RegisterView(this);
+            RMVCAppFacade.RegisterActor(this);
         }
 
         public event Action? ShowHomeViewEvt;
         public event Action? ShowCounterViewEvt;
         public event Action? ShowWeatherViewEvt;
         protected void HandleDisposing() {
-            RMVCAppFacade.UnregisterView(this);
+            RMVCAppFacade.UnregisterActor(this);
         }
         private void weatherLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
             ShowWeatherViewEvt?.Invoke();

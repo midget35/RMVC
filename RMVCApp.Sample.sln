@@ -17,6 +17,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMVCApp.Sample.WPF", "Sampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMVC", "RMVC\RMVC.csproj", "{951C78EC-A7A1-401B-811C-82120FDE4A9F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Sample\RMVCApp.Sample.Unity\Assembly-CSharp.csproj", "{3D1BCED0-D2AE-537D-1168-6F61D6E46C01}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RMVCApp.Sample.Unity", "RMVCApp.Sample.Unity", "{AC72811B-D645-4EF6-BD22-F9666B247332}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,9 +57,16 @@ Global
 		{951C78EC-A7A1-401B-811C-82120FDE4A9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{951C78EC-A7A1-401B-811C-82120FDE4A9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{951C78EC-A7A1-401B-811C-82120FDE4A9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D1BCED0-D2AE-537D-1168-6F61D6E46C01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D1BCED0-D2AE-537D-1168-6F61D6E46C01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D1BCED0-D2AE-537D-1168-6F61D6E46C01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D1BCED0-D2AE-537D-1168-6F61D6E46C01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3D1BCED0-D2AE-537D-1168-6F61D6E46C01} = {AC72811B-D645-4EF6-BD22-F9666B247332}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9563A4A8-FE4E-4D35-B777-8B605A23B254}

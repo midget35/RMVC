@@ -12,8 +12,8 @@
         protected override bool EnableAutoUpdate => false;
 
         protected override async Task RunAsync() {
-            if (base.AppShell != null) {
-                bool result = await base.AppShell.ShowMessageBox("Attention", message, false);
+            if (RMVCAppFacade.Instance?.App != null) {
+                bool result = await RMVCAppFacade.Instance.App.ShowMessageBox("Attention", message, false);
             }
         }
     }

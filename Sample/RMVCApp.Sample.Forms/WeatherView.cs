@@ -5,7 +5,7 @@ namespace RMVCApp.Forms {
     public partial class WeatherView : UserControl, IWeatherView {
         public WeatherView() {
             InitializeComponent();
-            RMVCAppFacade.RegisterView(this);
+            RMVCAppFacade.RegisterActor(this);
         }
 
 
@@ -23,7 +23,7 @@ namespace RMVCApp.Forms {
         }
 
         protected void HandleDisposing() {
-            RMVCAppFacade.UnregisterView(this);
+            RMVCAppFacade.UnregisterActor(this);
         }
     }
 }
